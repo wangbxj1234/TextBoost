@@ -1,5 +1,7 @@
 # Reproduction
 
+The two checkpoints behind the tables below are on the [weights release](https://github.com/wangbxj1234/TextBoost/releases/tag/weights): `textboost_stage2.pt` for TextBoost, and `elic_matched.pt` for the rate-matched ELIC. Download commands and the eval entry points are in the [README](README.md).
+
 One TextBoost checkpoint, trained on 8 GPUs until the loss plateaued. This is not the paper's 1000-epoch ImageNet schedule, and it is one operating point rather than the paper's four bitrate points.
 
 The image codec is ELIC (`N=192`, `M=320`). Stage 1 trains the whole network on TextOCR training images with
