@@ -43,4 +43,19 @@ Small text only (average character area below 800; larger words are don't-care):
 | LAION English | 0.263 | 0.095 | 0.279 | 0.163 | 0.007 | 0.078 |
 | Wukong Chinese | 0.108 | 0.042 | 0.145 | 0.040 | 0.003 | 0.019 |
 
-Against the ELIC decode of the same bitstream, the fusion block raises small-text detection F1 on every set. These F1 numbers are EasyOCR scores. They are not the paper's UNITS scores, and the backbone here was not retrained to spend the side-stream bits on the image. A rate-matched ELIC, trained separately so that its image bpp matches TextBoost's total bpp, is not in this snapshot.
+Against the ELIC decode of the same bitstream, the fusion block raises small-text detection F1 on every set. These F1 numbers are EasyOCR scores. They are not the paper's UNITS scores.
+
+## Rate-matched ELIC
+
+The comparison above keeps the image bitstream fixed, so the backbone is not allowed to spend the side-stream bits. A second ELIC was trained on the same images, with the loss on the decoder RGB before fusion and with the fusion weights frozen. It was initialized from the same stage-1 checkpoint as TextBoost and stopped at `lambda=0.00033`. On TextOCR val its file bpp is **0.0305**, against TextBoost's total of **0.0304** (image 0.0162 plus side 0.0142).
+
+EasyOCR F1 of that ELIC, scored on its own reconstruction:
+
+| TextOCR | Original | Rate-matched ELIC | TextBoost | Same-bitstream ELIC |
+|---|---:|---:|---:|---:|
+| DET, all text | 0.398 | 0.133 | 0.200 | 0.048 |
+| E2E, all text | 0.149 | 0.029 | 0.029 | 0.009 |
+| DET, small text | 0.367 | 0.074 | 0.169 | 0.013 |
+| E2E, small text | 0.130 | 0.005 | 0.015 | 0.000 |
+
+At the same total rate, TextBoost still leads on small-text detection (0.169 against 0.074). End-to-end F1 over all TextOCR words is tied at 0.029. Giving the side-stream bits to ELIC itself recovers part of the gap from the same-bitstream decode (detection 0.048 to 0.133) and leaves most of the small-text gap. This ELIC was matched on TextOCR only. Its bitrate on LAION and Wukong was not matched to those sets.

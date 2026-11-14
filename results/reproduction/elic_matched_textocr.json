@@ -1,0 +1,10 @@
+{
+  "checkpoint": "elic_matched/stage1, lambda 0.00033, fusion frozen, loss on x_base",
+  "textocr_images": 3124,
+  "textocr_bpp": 0.030496549929496488,
+  "textboost_total_bpp": 0.03037397206622358,
+  "easyocr_f1": {
+    "all": {"det": 0.1330, "e2e": 0.0292},
+    "small": {"det": 0.0738, "e2e": 0.0046}
+  }
+}

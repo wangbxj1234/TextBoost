@@ -51,6 +51,12 @@ def parse_args():
     p.add_argument("--stage2-max-epochs", type=int, default=30)
     p.add_argument("--lr-floor", type=float, default=1e-4)
     p.add_argument("--stage2-lr-floor", type=float, default=2.5e-4)
+    p.add_argument("--stage1-only", action="store_true")
+    p.add_argument(
+        "--elic-only",
+        action="store_true",
+        help="Train the ELIC reconstruction, before the fusion block.",
+    )
     return p.parse_args()
 
 
@@ -138,6 +144,11 @@ def run_stage1(args, raw, device, rank, log):
             resumed = True
     if not resumed:
         load_weights(raw, args.init_checkpoint, device)
+    if args.elic_only:
+        raw.elic_only = True
+        for name, param in raw.named_parameters():
+            if name.startswith("fusion."):
+                param.requires_grad = False
     net = DDP(raw, device_ids=[device.index], output_device=device.index)
     optimizer, aux_optimizer = split_params(net, lr, args.aux_learning_rate)
     if resumed and optimizer is not None and "optimizer" in ckpt:
@@ -439,8 +450,11 @@ def main():
     stage1_ckpt = run_stage1(args, raw, device, rank, log)
     del raw
     torch.cuda.empty_cache()
-    run_stage2(args, device, rank, log, stage1_ckpt)
-    log.info("done")
+    if args.stage1_only:
+        log.info("stage1 only, skip fusion training")
+    else:
+        run_stage2(args, device, rank, log, stage1_ckpt)
+        log.info("done")
     dist.destroy_process_group()
 
 

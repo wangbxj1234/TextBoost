@@ -24,6 +24,9 @@ class TextBoostELIC(ELIC):
         if guidance is None:
             guidance = x_base.new_zeros(x_base.shape)
         out["x_base"] = x_base
+        if getattr(self, "elic_only", False):
+            out["x_hat"] = x_base
+            return out
         out["x_hat"] = self.fusion(x_base, guidance)
         return out
 
