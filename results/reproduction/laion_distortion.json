@@ -1,0 +1,14 @@
+{
+  "images": 1000,
+  "ok": 1000,
+  "errors": 0,
+  "bpp_image": 0.02324951171875,
+  "bpp_side": 0.001999786376953125,
+  "bpp": 0.025249298095703126,
+  "psnr": 24.26933568244386,
+  "msssim": 0.897949399292469,
+  "msssim_n": 1000,
+  "psnr_smalltext": 16.55680934333133,
+  "images_with_smalltext": 422,
+  "kept_instances": 1039
+}
