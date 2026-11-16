@@ -2,7 +2,7 @@
 
 The two checkpoints behind the tables below are on the [weights release](https://github.com/wangbxj1234/TextBoost/releases/tag/weights): `textboost_stage2.pt` for TextBoost, and `elic_matched.pt` for the rate-matched ELIC. Download commands and the eval entry points are in the [README](README.md).
 
-One TextBoost checkpoint, trained on 8 GPUs until the loss plateaued. This is not the paper's 1000-epoch ImageNet schedule, and it is one operating point rather than the paper's four bitrate points.
+The tables below are one TextBoost checkpoint, trained on 8 GPUs until the loss plateaued. This is not the paper's 1000-epoch ImageNet schedule. Four more lambdas, measured on the full TextOCR val set, follow that table.
 
 The image codec is ELIC (`N=192`, `M=320`). Stage 1 trains the whole network on TextOCR training images with
 
@@ -28,6 +28,18 @@ Bitrate is the arithmetic-coded file size plus the gzip side stream, divided by 
 | Kodak | 24 | 0.0146 | 0.0004 | 0.0151 | 23.04 | 0.759 | — |
 
 Kodak has no text annotation, so the side stream is an empty gzip. On TextOCR the side stream is about as large as the image stream. On LAION and Wukong most annotated words are larger than the area-800 filter, so the side stream is a few thousandths of a bit per pixel.
+
+Four more stage-2 checkpoints use the same recipe at other λ. Each was trained until the loss plateaued, then scored on all 3124 TextOCR val images. The side stream does not depend on λ, so it stays at 0.0142 bpp. Raw summaries are in `results/paper4/`. These four were not run on LAION, Wukong, Kodak, or EasyOCR.
+
+| Checkpoint | λ | Image bpp | Side bpp | Total bpp | PSNR | MS-SSIM | Small-text PSNR |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `textboost_t018.pt` | 0.0000055 | 0.0026 | 0.0142 | 0.0167 | 19.23 | 0.631 | 15.15 |
+| `textboost_t024.pt` | 0.000037 | 0.0087 | 0.0142 | 0.0228 | 22.88 | 0.780 | 17.04 |
+| `textboost_t029.pt` | 0.000083 | 0.0141 | 0.0142 | 0.0283 | 24.44 | 0.834 | 18.24 |
+| `textboost_stage2.pt` | 0.0001 | 0.0162 | 0.0142 | 0.0304 | 24.59 | 0.840 | 18.17 |
+| `textboost_t033.pt` | 0.000135 | 0.0187 | 0.0142 | 0.0329 | 25.39 | 0.860 | 19.00 |
+
+None of these totals is 0.025 bpp. The nearest is `textboost_t024.pt` at 0.0228. `textboost_stage2.pt` remains the 0.0304 point.
 
 ## EasyOCR F1
 
