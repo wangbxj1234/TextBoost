@@ -82,7 +82,6 @@ for name in ("laion_all", "wukong_all"):
     def wmean(key):
         return sum(r[key] * r["height"] * r["width"] for r in ok) / pixels
     msssim = [r["msssim"] for r in ok if r.get("msssim") is not None]
-    small = [r["psnr_smalltext"] for r in ok if r.get("psnr_smalltext") is not None]
     summary = {
         "images": len(rows),
         "ok": len(ok),
@@ -93,8 +92,6 @@ for name in ("laion_all", "wukong_all"):
         "psnr": sum(r["psnr"] for r in ok) / len(ok),
         "msssim": sum(msssim) / len(msssim) if msssim else None,
         "msssim_n": len(msssim),
-        "psnr_text": sum(small) / len(small) if small else None,
-        "images_with_text": len(small),
         "kept_instances": sum(r["instances"] for r in ok),
         "area_threshold": 1e9,
     }

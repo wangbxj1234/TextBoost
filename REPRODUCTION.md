@@ -20,24 +20,24 @@ Raw summaries are in `results/reproduction/`.
 
 Bitrate is the arithmetic-coded file size plus the compressed small-text side stream, divided by the original pixel count. Side bpp in the tables is total side bytes over total pixels. It is not a constant added to every image. PSNR and MS-SSIM are unweighted means.
 
-| Set | Images | Image bpp | Side bpp | Total bpp | PSNR | MS-SSIM | Small-text PSNR |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| TextOCR val | 3124 | 0.0162 | 0.0072 | 0.0234 | 24.59 | 0.840 | 18.17 |
-| LAION English | 1000 | 0.0232 | 0.0008 | 0.0241 | 24.27 | 0.898 | 16.56 |
-| Wukong Chinese | 1000 | 0.0226 | 0.0002 | 0.0228 | 22.98 | 0.869 | 16.51 |
-| Kodak | 24 | 0.0146 | 0 | 0.0146 | 23.04 | 0.759 | — |
+| Set | Images | Image bpp | Side bpp | Total bpp | PSNR | MS-SSIM |
+|---|---:|---:|---:|---:|---:|---:|
+| TextOCR val | 3124 | 0.0162 | 0.0072 | 0.0234 | 24.59 | 0.840 |
+| LAION English | 1000 | 0.0232 | 0.0008 | 0.0241 | 24.27 | 0.898 |
+| Wukong Chinese | 1000 | 0.0226 | 0.0002 | 0.0228 | 22.98 | 0.869 |
+| Kodak | 24 | 0.0146 | 0 | 0.0146 | 23.04 | 0.759 |
 
 Kodak has no text annotation, so its side stream is empty. On LAION and Wukong most annotated words are larger than the area-800 filter, so little text is sent.
 
 Four more stage-2 checkpoints use the same recipe at other λ. Each was trained until the loss plateaued, then scored on all 3124 TextOCR val images. These five checkpoints read the same annotations, so they share one TextOCR side rate. Raw summaries are in `results/paper4/`. These four were not run on LAION, Wukong, Kodak, or EasyOCR.
 
-| Checkpoint | λ | Image bpp | Side bpp | Total bpp | PSNR | MS-SSIM | Small-text PSNR |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| `textboost_t018.pt` | 0.0000055 | 0.0026 | 0.0072 | 0.0097 | 19.23 | 0.631 | 15.15 |
-| `textboost_t024.pt` | 0.000037 | 0.0087 | 0.0072 | 0.0159 | 22.88 | 0.780 | 17.04 |
-| `textboost_t029.pt` | 0.000083 | 0.0141 | 0.0072 | 0.0213 | 24.44 | 0.834 | 18.24 |
-| `textboost_stage2.pt` | 0.0001 | 0.0162 | 0.0072 | 0.0234 | 24.59 | 0.840 | 18.17 |
-| `textboost_t033.pt` | 0.000135 | 0.0187 | 0.0072 | 0.0259 | 25.39 | 0.860 | 19.00 |
+| Checkpoint | λ | Image bpp | Side bpp | Total bpp | PSNR | MS-SSIM |
+|---|---:|---:|---:|---:|---:|---:|
+| `textboost_t018.pt` | 0.0000055 | 0.0026 | 0.0072 | 0.0097 | 19.23 | 0.631 |
+| `textboost_t024.pt` | 0.000037 | 0.0087 | 0.0072 | 0.0159 | 22.88 | 0.780 |
+| `textboost_t029.pt` | 0.000083 | 0.0141 | 0.0072 | 0.0213 | 24.44 | 0.834 |
+| `textboost_stage2.pt` | 0.0001 | 0.0162 | 0.0072 | 0.0234 | 24.59 | 0.840 |
+| `textboost_t033.pt` | 0.000135 | 0.0187 | 0.0072 | 0.0259 | 25.39 | 0.860 |
 
 `textboost_t033.pt` is the 0.0259 point. `textboost_t024.pt` is the 0.0159 point.
 

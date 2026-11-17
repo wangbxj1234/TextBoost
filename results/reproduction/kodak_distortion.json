@@ -8,7 +8,5 @@
   "psnr": 23.037477326446933,
   "msssim": 0.7585184872150421,
   "msssim_n": 24,
-  "psnr_smalltext": null,
-  "images_with_smalltext": 0,
   "kept_instances": 0
 }

@@ -106,11 +106,6 @@ def main():
                 image_bytes = stream_bytes(compressed["strings"])
                 side_bytes = len(pack_sideinfo(sample["instances"]))
                 pixels = float(h * w)
-                mask = sample["mask"][:h, :w].to(device)
-                text_mse = None
-                if float(mask.sum()) > 0:
-                    err = (hat - src) ** 2
-                    text_mse = (err * mask.unsqueeze(0)).sum().item() / (float(mask.sum()) * 3.0)
                 msssim = None
                 if ms_ssim is not None and min(h, w) >= 160:
                     msssim = float(ms_ssim(hat, src, data_range=1.0, size_average=True))
@@ -123,7 +118,6 @@ def main():
                     "bpp": ((image_bytes + side_bytes) * 8.0) / pixels,
                     "psnr": psnr(mse),
                     "msssim": msssim,
-                    "psnr_smalltext": None if text_mse is None else psnr(text_mse),
                 })
                 del image, guidance, hat, src, restored, compressed
             except RuntimeError as exc:
