@@ -8,12 +8,12 @@ The checkpoints that produced those numbers are on the [weights release](https:/
 
 | File | What to score |
 |---|---|
-| [textboost_stage2.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_stage2.pt) | Fused reconstruction `x_hat`. Full TextOCR val total is 0.0304 bpp (image 0.0162 + side 0.0142). This is the published TextOCR, LAION, Wukong, and Kodak checkpoint. |
-| [elic_matched.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/elic_matched.pt) | Decoder RGB before fusion, `x_base`. On TextOCR its file size is 0.0305 bpp, against TextBoost's total of 0.0304 bpp. The fusion weights in this file were frozen and are not the trained TextBoost fusion. |
-| [textboost_t018.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t018.pt) | λ = 0.0000055. Full TextOCR val total 0.0167 bpp (image 0.0026 + side 0.0142). PSNR 19.23. |
-| [textboost_t024.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t024.pt) | λ = 0.000037. Full TextOCR val total 0.0228 bpp (image 0.0087 + side 0.0142). PSNR 22.88. |
-| [textboost_t029.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t029.pt) | λ = 0.000083. Full TextOCR val total 0.0283 bpp (image 0.0141 + side 0.0142). PSNR 24.44. |
-| [textboost_t033.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t033.pt) | λ = 0.000135. Full TextOCR val total 0.0329 bpp (image 0.0187 + side 0.0142). PSNR 25.39. |
+| [textboost_stage2.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_stage2.pt) | Fused reconstruction `x_hat`. Full TextOCR val total is 0.0234 bpp (image 0.0162 + compressed small text 0.0072). This is the published TextOCR, LAION, Wukong, and Kodak checkpoint. |
+| [elic_matched.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/elic_matched.pt) | Decoder RGB before fusion, `x_base`. On TextOCR its file size is 0.0305 bpp. TextBoost's total on the same set is 0.0234 bpp. The fusion weights in this file were frozen and are not the trained TextBoost fusion. |
+| [textboost_t018.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t018.pt) | λ = 0.0000055. Full TextOCR val total 0.0097 bpp (image 0.0026 + compressed small text 0.0072). PSNR 19.23. |
+| [textboost_t024.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t024.pt) | λ = 0.000037. Full TextOCR val total 0.0159 bpp (image 0.0087 + compressed small text 0.0072). PSNR 22.88. |
+| [textboost_t029.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t029.pt) | λ = 0.000083. Full TextOCR val total 0.0213 bpp (image 0.0141 + compressed small text 0.0072). PSNR 24.44. |
+| [textboost_t033.pt](https://github.com/wangbxj1234/TextBoost/releases/download/weights/textboost_t033.pt) | λ = 0.000135. Full TextOCR val total 0.0259 bpp (image 0.0187 + compressed small text 0.0072). PSNR 25.39. |
 
 ```bash
 curl -L -o textboost_stage2.pt \
@@ -27,7 +27,7 @@ ckpt = torch.load(path, map_location="cpu")
 net.load_state_dict(ckpt["state_dict"])
 ```
 
-Dependencies are PyTorch, CompressAI, Pillow, NumPy, and `pytorch-msssim`. EasyOCR is only needed for F1. `compress` pads each image to a multiple of 64 and expects a CUDA GPU. The side stream is the dataset's own boxes and transcripts whose average character area is below 800, gzip-compressed. English guidance uses DejaVu Sans. Chinese guidance needs a CJK font passed with `--font`.
+Dependencies are PyTorch, CompressAI, Pillow, NumPy, and `pytorch-msssim`. EasyOCR is only needed for F1. `compress` pads each image to a multiple of 64 and expects a CUDA GPU. The side stream of each image is that image's own strings whose average character area is below 800, with their polygons quantized to integer pixels and gzip-compressed. An image with no such string sends nothing. English guidance uses DejaVu Sans. Chinese guidance needs a CJK font passed with `--font`.
 
 TextOCR annotations are `TextOCR_0.1_val.json`. The validation `file_name` values point at TextVQA training images; the loader matches each one by basename under `--image-root`.
 
@@ -69,7 +69,7 @@ PYTHONPATH=. python playground/eval_f1.py \
 
 `--lang ch_sim` loads Chinese and English for Wukong. LAION and Wukong use `--kind anytext` with that benchmark's `test1k.json`. EasyOCR F1 in the tables is for `textboost_stage2.pt` only, not UNITS.
 
-`textboost_t018.pt`, `textboost_t024.pt`, `textboost_t029.pt`, and `textboost_t033.pt` are four more stage-2 checkpoints from the same recipe, at the lambdas above. λ is the coefficient in `bpp + λ * 255^2 * MSE`. The totals above are the full 3124-image TextOCR val set: arithmetic-coded image stream plus the gzip side stream. Raw summaries are in `results/paper4/`. EasyOCR F1 was not run for these four.
+`textboost_t018.pt`, `textboost_t024.pt`, `textboost_t029.pt`, and `textboost_t033.pt` are four more stage-2 checkpoints from the same recipe, at the lambdas above. λ is the coefficient in `bpp + λ * 255^2 * MSE`. The totals above are the full 3124-image TextOCR val set: arithmetic-coded image stream plus that image's compressed small text. Raw summaries are in `results/paper4/`. EasyOCR F1 was not run for these four.
 
 # ELIC
 Unofficial Implementation of CVPR22 papar "ELIC: Efficient Learned Image Compression with Unevenly Grouped Space-Channel Contextual Adaptive Coding".

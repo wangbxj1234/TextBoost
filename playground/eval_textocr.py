@@ -1,8 +1,8 @@
 """Evaluate one TextBoost checkpoint on the TextOCR validation split.
 
-The side stream is the dataset's own boxes and transcripts, filtered at
-T_test=800 and counted as gzip bytes. Bitrate is the arithmetic-coded image
-stream plus that side stream.
+The side stream is that image's own small-text strings and polygons, filtered
+at T_test=800 and gzip-compressed. An image with none sends nothing. Bitrate
+is the arithmetic-coded image stream plus that side stream.
 """
 
 import argparse

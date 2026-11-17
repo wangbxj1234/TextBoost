@@ -1,7 +1,7 @@
 """Evaluate the stage-2 checkpoint on a folder of images.
 
 AnyText records carry polygons and transcripts. Kodak has no text
-annotation, so the guidance tensor stays zero and the side stream is empty.
+annotation, so the guidance tensor stays zero and the side stream is zero bytes.
 """
 
 import argparse

@@ -1,8 +1,8 @@
 """OCR boxes and strings to a geometry-aligned guidance map."""
 
 import gzip
-import json
 import math
+import struct
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
@@ -145,12 +145,24 @@ def filter_instances(records, threshold):
 
 
 def pack_sideinfo(instances):
-    payload = []
+    """Compressed small-text side stream for one image.
+
+    Each kept string is sent with its own polygon, quantized to integer
+    pixels. An image with nothing under the area filter sends no bytes.
+    """
+    if not instances:
+        return b""
+    buf = bytearray()
     for inst in instances:
+        text = inst["text"].encode("utf-8")
         pts = np.asarray(inst["points"], dtype=np.float64).reshape(-1, 2)
-        payload.append({"text": inst["text"], "points": pts.round(2).tolist()})
-    raw = json.dumps(payload, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    return gzip.compress(raw)
+        flat = np.clip(np.rint(pts), 0, 65535).astype("<u2").reshape(-1)
+        buf += struct.pack("<HH", len(text), int(flat.size))
+        buf += text
+        buf += flat.tobytes()
+    raw = bytes(buf)
+    blob = gzip.compress(raw, compresslevel=9)
+    return blob if len(blob) <= len(raw) else raw
 
 
 def sideinfo_bpp(instances, height, width):
